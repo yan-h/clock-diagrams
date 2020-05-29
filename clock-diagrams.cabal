@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a84017513671724421c6fecc17dc473ec1555feb15641a7ac98dd26770072722
+-- hash: a16abacc8b6bb3e63ec482263072bdb74a04ef8ddc01dc91e5fffca87447474b
 
 name:           clock-diagrams
 version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/githubuser/clock-diagrams#readme>
 homepage:       https://github.com/githubuser/clock-diagrams#readme
 bug-reports:    https://github.com/githubuser/clock-diagrams/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
+author:         Yan Han
+maintainer:     yanhan13@example.com
+copyright:      2020 Yan Han
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -33,7 +33,7 @@ library
       Paths_clock_diagrams
   hs-source-dirs:
       src
-  default-extensions: NoMonomorphismRestriction FlexibleContexts TypeFamilies
+  default-extensions: TypeSynonymInstances FlexibleInstances NoMonomorphismRestriction InstanceSigs DataKinds FlexibleContexts TypeFamilies MultiParamTypeClasses GeneralizedNewtypeDeriving
   build-depends:
       base >=4.7 && <5
     , colour >=2
@@ -42,6 +42,7 @@ library
     , diagrams-core
     , diagrams-lib
     , diagrams-svg
+    , modular-arithmetic >=1.2
   default-language: Haskell2010
 
 executable clock-diagrams-exe
@@ -50,7 +51,7 @@ executable clock-diagrams-exe
       Paths_clock_diagrams
   hs-source-dirs:
       app
-  default-extensions: NoMonomorphismRestriction FlexibleContexts TypeFamilies
+  default-extensions: TypeSynonymInstances FlexibleInstances NoMonomorphismRestriction InstanceSigs DataKinds FlexibleContexts TypeFamilies MultiParamTypeClasses GeneralizedNewtypeDeriving
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -61,6 +62,7 @@ executable clock-diagrams-exe
     , diagrams-core
     , diagrams-lib
     , diagrams-svg
+    , modular-arithmetic >=1.2
   default-language: Haskell2010
 
 test-suite clock-diagrams-test
@@ -70,7 +72,7 @@ test-suite clock-diagrams-test
       Paths_clock_diagrams
   hs-source-dirs:
       test
-  default-extensions: NoMonomorphismRestriction FlexibleContexts TypeFamilies
+  default-extensions: TypeSynonymInstances FlexibleInstances NoMonomorphismRestriction InstanceSigs DataKinds FlexibleContexts TypeFamilies MultiParamTypeClasses GeneralizedNewtypeDeriving
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -81,4 +83,5 @@ test-suite clock-diagrams-test
     , diagrams-core
     , diagrams-lib
     , diagrams-svg
+    , modular-arithmetic >=1.2
   default-language: Haskell2010

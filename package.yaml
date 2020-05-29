@@ -2,9 +2,9 @@ name:                clock-diagrams
 version:             0.1.0.0
 github:              "githubuser/clock-diagrams"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+author:              "Yan Han"
+maintainer:          "yanhan13@example.com"
+copyright:           "2020 Yan Han"
 
 extra-source-files:
 - README.md
@@ -27,12 +27,19 @@ dependencies:
 - diagrams-lib
 - diagrams-contrib
 - colour >= 2
+- modular-arithmetic >= 1.2 
 
 
 default-extensions:
+- TypeSynonymInstances
+- FlexibleInstances
 - NoMonomorphismRestriction
+- InstanceSigs
+- DataKinds
 - FlexibleContexts
 - TypeFamilies
+- MultiParamTypeClasses
+- GeneralizedNewtypeDeriving
 
 library:
   source-dirs: src

@@ -39,7 +39,8 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
+extra-deps:
+- modular-arithmetic-1.2.1.5@sha256:af7daf1856fcab5674dee30485bbee046f31081fba5d9c99395fc4fb9e4ee557,1415
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

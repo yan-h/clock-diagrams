@@ -7,4 +7,4 @@ import Music.PC
 
 
 main :: IO ()
-main = mainWith allMMTransitions
+main = mainWith majorMinorTransitions 

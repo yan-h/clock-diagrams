@@ -8,19 +8,13 @@ import Data.Colour.CIE
 import Data.Colour.CIE.Illuminant
 import Debug.Trace
 
-hue :: Double -> Double
-hue x = tau * x
-
-aCol, abCol, bCol :: (Ord a, Floating a) => Colour a
+aCol, abCol, bCol, neutral :: (Ord a, Floating a) => Colour a
 aCol = labColor  (1.5/16)  1    0.8 
 abCol = labColor (-1.5/16) 0.8  0.5
 bCol = labColor  (-4.5/16) 0.6  0.2
-aCol' = labColor (1.5/16) 0.3 0.8
-abCol' = labColor (-1.5/16) 0.3 0.75
-bCol' = labColor (-4.5/16) 0.3 0.7
-
 neutral = labColor 0 0 0.85
 
+labColor :: (Ord a, Floating a) => a -> a -> a -> Colour a
 labColor hue saturation lightness = 
   cieLAB d65 (lightness * 100) (saturation * 128 * cos (tau * hue)) (saturation * 128 * sin (tau * hue))
 
@@ -59,21 +53,7 @@ twoScaleClock :: Scale -> Scale -> Diagram B
 twoScaleClock scaleA scaleB = 
   let go :: (Int -> Diagram B) -> Int -> Diagram B -> Diagram B
       go fn idx acc = acc `atop` fn idx # rotate (semis idx @@ turn)
-      
-      intervalWedges :: Scale -> (Colour Double, Colour Double) -> (Double, Double) -> Diagram B
-      intervalWedges scale (mainColor, tickColor) (innerRing, outerRing) = 
-        let ringPath = (circle outerRing <> (circle innerRing # reversePath)) 
-            ticksPath = B.intersection Winding ringPath $ B.difference Winding (circle (outerRing + 0.01)) intervalTicksPath
-            notchesPath = B.difference Winding (circle (outerRing + 0.01)) $ foldr go mempty (toPCList scale)
-            go :: PC -> Path V2 Double -> Path V2 Double
-            go pc acc = 
-              let rotAngle = fromIntegral (toInt pc) / 12.0
-                  notch = rect 0.12 (outerRing + 0.01) # translateY (outerRing/2 + 0.005) # rotate (-rotAngle @@ turn)
-              in  B.union Winding (notch <> acc)
-        in  clipBy notchesPath $ 
-              ticksPath # strokeP # fc tickColor # lcA transparent
-              <> ringPath # strokeP # fc mainColor # lcA transparent
-           
+
       pcWedge :: Int -> Diagram B
       pcWedge idx = 
           wedge 0.5 (rotate (-1/24 @@ turn) yDir) (1/12 @@ turn) # fc fillCol # lcA transparent
@@ -83,45 +63,43 @@ twoScaleClock scaleA scaleB =
                   | scaleB `contains` pc idx = bCol
                   | otherwise = neutral
 
-      intervalRings = intervalWedges scaleB (bCol, bCol') (0.6, 0.7) <> intervalWedges scaleA (aCol, aCol') (0.8, 0.9) -- & clipBy intervalTicksPath
-
-      pcPie = foldr (go pcWedge) mempty [0..11] # clipBy pcTicksPath
-
       intervalTicksPath = foldr go (square 2) [0..5]
         where go :: Double -> Path V2 Double -> Path V2 Double
               go x acc = 
                 let gridline = rect 0.03 2 # rotate (x * 1/12 @@ turn)
                 in  B.difference Winding acc gridline
       pcTicksPath = intervalTicksPath # rotate (1/24 @@ turn)
-  in pcPie <> intervalRings 
-
-allMMTransitions :: Diagram B
-allMMTransitions =
-  vsep 1 [
-    hsep 1 [ 
-        hsep 0.1 [ inversePair (majorTriad pc0) (transpose x (majorTriad pc0))
-                 | x <- pc <$> [0..6]]
-      , hsep 0.1 [ inversePair (minorTriad pc0) (transpose x (minorTriad pc0))
-                 | x <- pc <$> [0..6]]
-    ]
-    , hsep 0.1 [ inversePair (majorTriad pc0) (transpose x (minorTriad pc0))
-               | x <- pc <$> [0..11]]
-  ] # padX 1.05 # padY 1.1
+  in foldr (go pcWedge) mempty [0..11] # clipBy pcTicksPath
 
 inversePair :: Scale -> Scale -> Diagram B
 inversePair scaleA scaleB = 
-  let rootDiff = root scaleB - root scaleA
+  let rootDiff = (root scaleB) -| (root scaleA)
       scaleB' = transpose (-rootDiff) scaleA
       scaleA' = transpose (-rootDiff) scaleB
   in  if scaleA == scaleA' && scaleB' == scaleB
         then labeledTrans scaleA scaleB
-      else vsep 0.3 [
+      else vsep 0.2 [
         labeledTrans scaleA scaleB
       , labeledTrans scaleA' scaleB'
       ]
 
 labeledTrans :: Scale -> Scale -> Diagram B
-labeledTrans scaleA scaleB = vsep 0.2
+labeledTrans scaleA scaleB = vsep 0.16
   [ twoScaleClock scaleA scaleB 
-  , text str # fontSize 8]
-  where str = show (root scaleB - root scaleA) ++ pcsString (offsets scaleA) ++ pcsString (offsets scaleB)
+  , text str # fontSize 16]
+  where str = show (root scaleB - root scaleA) ++ itvsString (offsets scaleA) ++ itvsString (offsets scaleB)
+
+majorMinorTransitions :: Diagram B
+majorMinorTransitions =
+  vsep 0.6 [
+      hsep 0.6 [ 
+          hsep 0.08 # composeAligned centerY $ 
+            [ inversePair (majorTriad pc0) (transpose x (majorTriad pc0))
+            | x <- [up1 .. up6]]
+        , hsep 0.08 # composeAligned centerY $ 
+            [ inversePair (minorTriad pc0) (transpose x (minorTriad pc0))
+            | x <- [up1 .. up6]]
+      ]
+      , hsep 0.08 [ inversePair (majorTriad pc0) (transpose x (minorTriad pc0))
+                | x <- [up0 .. upE]]
+    ] # bgFrame 0.1 white
