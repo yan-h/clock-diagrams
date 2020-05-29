@@ -86,7 +86,7 @@ inversePair scaleA scaleB =
 labeledTrans :: Scale -> Scale -> Diagram B
 labeledTrans scaleA scaleB = vsep 0.16
   [ twoScaleClock scaleA scaleB 
-  , text str # fontSize 16]
+  , text str # fontSize 24]
   where str = show (root scaleB - root scaleA) ++ itvsString (offsets scaleA) ++ itvsString (offsets scaleB)
 
 majorMinorTransitions :: Diagram B
